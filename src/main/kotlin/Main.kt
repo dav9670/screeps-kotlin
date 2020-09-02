@@ -1,6 +1,11 @@
-
-
-import starter.gameLoop
+import creeps.purposefulCreep
+import creeps.purposefulCreeps.Hauler
+import creeps.purposefulCreeps.Miner
+import screeps.api.*
+import screeps.api.structures.StructureSpawn
+import screeps.utils.isEmpty
+import screeps.utils.unsafe.delete
+import structures.spawns.spawn
 
 /**
  * Entry point
@@ -11,4 +16,42 @@ import starter.gameLoop
 @Suppress("unused")
 fun loop() {
     gameLoop()
+}
+
+fun gameLoop() {
+    cleanMemory()
+
+    spawn()
+
+    executeCreeps()
+}
+
+private fun cleanMemory() {
+    if (Game.creeps.isEmpty()) return  // this is needed because Memory.creeps is undefined
+
+    for ((creepName, _) in Memory.creeps) {
+        if (Game.creeps[creepName] == null) {
+            delete(Memory.creeps[creepName])
+        }
+    }
+}
+
+private fun spawn() {
+    val mainSpawn: StructureSpawn = Game.spawns.values.firstOrNull() ?: return
+
+    val behaviors = arrayOf(Hauler.spawnBehavior, Miner.spawnBehavior)
+
+    val behavior = behaviors.maxBy{it.spawnPriority}!!
+
+    if(behavior.spawnPriority > 0.0) {
+        mainSpawn.spawn(behavior)
+    }
+}
+
+private fun executeCreeps() {
+    for ((_, creep) in Game.creeps) {
+        val purposefulCreep = creep.purposefulCreep
+
+        purposefulCreep.execute()
+    }
 }

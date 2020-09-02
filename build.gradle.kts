@@ -35,7 +35,7 @@ kotlin {
                     outputDirectory = minifiedJsDirectory
                 }
                 keep(
-                    "${project.name}.loop"
+                        "${project.name}.loop"
                 )
             }
 
@@ -78,12 +78,11 @@ tasks.register<RestTask>("deploy") {
         val (mainModule, otherModules) = jsFiles.partition { it.nameWithoutExtension == project.name }
 
         val main = mainModule.firstOrNull()
-            ?: throw IllegalStateException("Could not find js file corresponding to main module in ${minifiedCodeLocation.absolutePath}. Was looking for ${project.name}.js")
+                ?: throw IllegalStateException("Could not find js file corresponding to main module in ${minifiedCodeLocation.absolutePath}. Was looking for ${project.name}.js")
 
         modules["main"] = main.readText()
         modules.putAll(otherModules.associate { it.nameWithoutExtension to it.readText() })
 
         logger.lifecycle("uploading ${jsFiles.count()} files to branch '$branch' on server $host")
     }
-
 }
