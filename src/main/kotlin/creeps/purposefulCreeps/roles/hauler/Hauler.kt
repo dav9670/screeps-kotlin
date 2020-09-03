@@ -1,19 +1,21 @@
-package creeps.purposefulCreeps
+package creeps.purposefulCreeps.roles.hauler
 
+import creeps.Status
+import creeps.currentMessage
+import creeps.purposefulCreeps.PurposefulCreep
+import creeps.purposefulCreeps.roles.miner.Miner
 import creeps.purposefulCreeps.roles.Role
 import creeps.purposefulCreeps.roles.SpawnBehavior
+import creeps.purposefulCreeps.roles.miner.NeedCarryMessage
+import creeps.status
 import screeps.api.*
 
 class Hauler(creep: Creep) : PurposefulCreep(creep) {
     companion object RoleCompanion : Role<Hauler>(object : SpawnBehavior {
         override val spawnPriority: Double
             get() {
-                if(Hauler.roleCount == 0 && Miner.roleCount != 0) {
+                if (Hauler.roleCount < (Miner.roleCount + 1) / 2) {
                     return SpawnBehavior.SpawnPriority.HIGH.priority
-                }
-
-                if(Hauler.roleCount < Game.spawns.values.sumBy { it.room.find(FIND_SOURCES).count() }) {
-                    return SpawnBehavior.SpawnPriority.MEDIUM.priority
                 }
 
                 return SpawnBehavior.SpawnPriority.NONE.priority
@@ -26,12 +28,14 @@ class Hauler(creep: Creep) : PurposefulCreep(creep) {
             get() = Hauler::class.simpleName!!
     })
 
-    override fun execute() {
-        creep.haul()
-
+    override fun doRole() {
+        when(val message = creep.memory.currentMessage) {
+            null -> return
+            is NeedCarryMessage -> creep.fetch(message.sender.creep, message.resource, message.amount)
+        }
     }
 
-    private fun Creep.haul() {
+    private fun Creep.fetch(target: Creep, resource: ResourceConstant, amount: Int) {
 
     }
 }

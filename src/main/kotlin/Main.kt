@@ -1,6 +1,7 @@
 import creeps.purposefulCreep
-import creeps.purposefulCreeps.Hauler
-import creeps.purposefulCreeps.Miner
+import creeps.purposefulCreeps.roles.hauler.Hauler
+import creeps.purposefulCreeps.roles.miner.Miner
+import memory.initialized
 import screeps.api.*
 import screeps.api.structures.StructureSpawn
 import screeps.utils.isEmpty
@@ -15,8 +16,15 @@ import structures.spawns.spawn
  */
 @Suppress("unused")
 fun loop() {
+    if (!Memory.initialized) {
+        init()
+        Memory.initialized = true
+    }
+
     gameLoop()
 }
+
+fun init() {}
 
 fun gameLoop() {
     cleanMemory()
@@ -41,9 +49,9 @@ private fun spawn() {
 
     val behaviors = arrayOf(Hauler.spawnBehavior, Miner.spawnBehavior)
 
-    val behavior = behaviors.maxBy{it.spawnPriority}!!
+    val behavior = behaviors.maxBy { it.spawnPriority }!!
 
-    if(behavior.spawnPriority > 0.0) {
+    if (behavior.spawnPriority > 0.0) {
         mainSpawn.spawn(behavior)
     }
 }

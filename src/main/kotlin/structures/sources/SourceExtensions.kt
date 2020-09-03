@@ -1,6 +1,6 @@
 package structures.sources
 
-import creeps.purposefulCreeps.Miner
+import creeps.purposefulCreeps.roles.miner.Miner
 import creepsTargeting
 import screeps.api.Creep
 import screeps.api.Identifiable

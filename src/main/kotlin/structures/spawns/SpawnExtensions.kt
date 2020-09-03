@@ -12,8 +12,7 @@ fun StructureSpawn.spawn(behavior: SpawnBehavior) {
     })
 
     when (code) {
-        OK -> console.log("spawning $creepName with body ${behavior.body}")
-        ERR_BUSY, ERR_NOT_ENOUGH_ENERGY -> run { } // do nothing
+        OK, ERR_BUSY, ERR_NOT_ENOUGH_ENERGY -> run { } // do nothing
         else -> console.log("unhandled error code $code")
     }
 }
