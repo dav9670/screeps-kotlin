@@ -49,7 +49,7 @@ private fun spawn() {
 
     val behaviors = arrayOf(Hauler.spawnBehavior, Miner.spawnBehavior)
 
-    val behavior = behaviors.maxBy { it.spawnPriority }!!
+    val behavior = behaviors.maxByOrNull { it.spawnPriority }!!
 
     if (behavior.spawnPriority > 0.0) {
         mainSpawn.spawn(behavior)

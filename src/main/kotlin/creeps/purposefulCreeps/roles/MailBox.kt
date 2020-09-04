@@ -3,18 +3,12 @@ package creeps.purposefulCreeps.roles
 import screeps.api.Identifiable
 
 class MailBox<R : Identifiable> {
-    enum class Priority {
-        Critical,
-        High,
-        Medium,
-        Low,
-        None
-    }
+    private val messages = mutableListOf<Message<out Identifiable, R>>()
 
-    private val messages = mutableMapOf(*(Priority.values().map { it to mutableListOf<Message<out Identifiable, R>>() }.toTypedArray()))
-
-    var messageCount = 0
-        private set
+    val messageCount: Int
+        get() {
+            return messages.count()
+        }
 
 
     val mostUrgentMessage: Message<*, R>?
@@ -22,9 +16,8 @@ class MailBox<R : Identifiable> {
             return getMostUrgentMessage()
         }
 
-    fun addMessage(priority: Priority, message: Message<*, R>) {
-        messages[priority]!!.add(message)
-        messageCount++
+    fun addMessage(message: Message<*, R>) {
+        messages.add(message)
     }
 
     fun popMostUrgentMessage(): Message<*, R>? {
@@ -32,15 +25,19 @@ class MailBox<R : Identifiable> {
     }
 
     private fun getMostUrgentMessage(pop: Boolean = false): Message<*, R>? {
-        for (priority in Priority.values()) {
-            if (messages[priority]!!.isNotEmpty()) {
-                val message = messages[priority]!!.first()
-                if (pop) {
-                    messages[priority]!!.remove(message)
-                    messageCount--
-                }
+        for (priority in Message.Priority.values()) {
+            val messagesForPriority = messages.filter { it.priority == priority }
+            if (messagesForPriority.isNotEmpty()) {
+                val message = messagesForPriority.first()
 
-                return message
+                if (pop) {
+                    message.repeat--
+                    messages.remove(message)
+
+                    if (message.repeat > 0) {
+                        messages.add(message.copy())
+                    }
+                }
             }
         }
 

@@ -2,8 +2,9 @@ import org._10ne.gradle.rest.RestTask
 import java.util.*
 
 plugins {
-    kotlin("js") version "1.3.71"
+    kotlin("js") version "1.4.0"
     id("org.tenne.rest") version "0.4.2"
+    kotlin("plugin.serialization") version "1.4.0"
 }
 
 repositories {
@@ -14,6 +15,9 @@ repositories {
 dependencies {
     implementation("ch.delconte.screeps-kotlin:screeps-kotlin-types:1.9.1")
     implementation(kotlin("stdlib-js"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.0.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.0.0-RC")
     testImplementation(kotlin("test-js"))
 }
 
@@ -27,7 +31,7 @@ val host = screepsHost ?: "https://screeps.com"
 val minifiedJsDirectory: String = File(buildDir, "minified-js").absolutePath
 
 kotlin {
-    target {
+    js {
         useCommonJs()
         browser {
             dceTask {

@@ -2,7 +2,7 @@ package creeps.purposefulCreeps.roles.miner
 
 import creeps.Status
 import creeps.purposefulCreeps.PurposefulCreep
-import creeps.purposefulCreeps.roles.MailBox
+import creeps.purposefulCreeps.roles.Message
 import creeps.purposefulCreeps.roles.Role
 import creeps.purposefulCreeps.roles.SpawnBehavior
 import creeps.purposefulCreeps.roles.hauler.Hauler
@@ -47,7 +47,7 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
 
     override fun doRole() {
         if (creep.store.getFreeCapacity() == 0) {
-            Hauler.mailBox.addMessage(MailBox.Priority.Medium, NeedCarryMessage(this))
+            Hauler.mailBox.addMessage(NeedCarryMessage(this, Message.Priority.Medium))
             return
         }
 
