@@ -2,7 +2,6 @@ package creeps.purposefulCreeps.roles.miner
 
 import creeps.purposefulCreeps.roles.Message
 import creeps.purposefulCreeps.roles.hauler.Hauler
-import creeps.purposefulCreeps.roles.miner.Miner
 import screeps.api.RESOURCE_ENERGY
 import screeps.api.ResourceConstant
 

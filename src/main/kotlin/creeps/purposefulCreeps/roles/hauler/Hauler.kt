@@ -1,13 +1,11 @@
 package creeps.purposefulCreeps.roles.hauler
 
-import creeps.Status
 import creeps.currentMessage
 import creeps.purposefulCreeps.PurposefulCreep
-import creeps.purposefulCreeps.roles.miner.Miner
 import creeps.purposefulCreeps.roles.Role
 import creeps.purposefulCreeps.roles.SpawnBehavior
+import creeps.purposefulCreeps.roles.miner.Miner
 import creeps.purposefulCreeps.roles.miner.NeedCarryMessage
-import creeps.status
 import screeps.api.*
 
 class Hauler(creep: Creep) : PurposefulCreep(creep) {
@@ -29,7 +27,7 @@ class Hauler(creep: Creep) : PurposefulCreep(creep) {
     })
 
     override fun doRole() {
-        when(val message = creep.memory.currentMessage) {
+        when (val message = creep.memory.currentMessage) {
             null -> return
             is NeedCarryMessage -> creep.fetch(message.sender.creep, message.resource, message.amount)
         }

@@ -7,10 +7,9 @@ import creeps.purposefulCreeps.roles.SpawnBehavior
 import creeps.status
 import screeps.api.BodyPartConstant
 import screeps.api.Creep
-import screeps.api.GenericCreep
 import screeps.api.Identifiable
 
-abstract class PurposefulCreep(val creep: Creep): Identifiable by creep {
+abstract class PurposefulCreep(val creep: Creep) : Identifiable by creep {
     companion object RoleCompanion : Role<PurposefulCreep>(object : SpawnBehavior {
         override val spawnPriority: Double
             get() = SpawnBehavior.SpawnPriority.NONE.priority
@@ -22,15 +21,16 @@ abstract class PurposefulCreep(val creep: Creep): Identifiable by creep {
 
     open fun init() {}
     fun execute() {
-        if(!creep.memory.initialized) {
+        if (!creep.memory.initialized) {
             init()
             creep.memory.initialized = true
 
         }
 
-        if(creep.memory.status != Status.Sleeping) {
+        if (creep.memory.status != Status.Sleeping) {
             doRole()
         }
     }
+
     protected abstract fun doRole()
 }

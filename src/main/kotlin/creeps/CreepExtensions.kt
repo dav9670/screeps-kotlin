@@ -1,9 +1,9 @@
 package creeps
 
-import creeps.purposefulCreeps.roles.hauler.Hauler
-import creeps.purposefulCreeps.roles.miner.Miner
 import creeps.purposefulCreeps.PurposefulCreep
 import creeps.purposefulCreeps.roles.Message
+import creeps.purposefulCreeps.roles.hauler.Hauler
+import creeps.purposefulCreeps.roles.miner.Miner
 import screeps.api.Creep
 import screeps.api.CreepMemory
 import screeps.api.Identifiable
@@ -18,7 +18,7 @@ enum class Status {
 /* Creep.memory */
 var CreepMemory.role by memory { PurposefulCreep.spawnBehavior.role }
 var CreepMemory.targetId by memory { "" }
-var CreepMemory.initialized  by memory { false }
+var CreepMemory.initialized by memory { false }
 var CreepMemory.status by memory { Status.Idle }
 var CreepMemory.currentMessage by memory<Message<out Identifiable, *>?>()
 

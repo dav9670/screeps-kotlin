@@ -28,10 +28,10 @@ open class Role<T : PurposefulCreep>(val spawnBehavior: SpawnBehavior) {
         }
 
     open fun handleMessages() {
-        if(mailBox.messageCount > 0) {
+        if (mailBox.messageCount > 0) {
             val availableCreeps = purposefulCreeps.filter { it.creep.memory.status == Status.Idle || it.creep.memory.status == Status.Sleeping }
 
-            if(availableCreeps.isNotEmpty()) {
+            if (availableCreeps.isNotEmpty()) {
                 val message = mailBox.popMostUrgentMessage()!!
                 val bestCreep = availableCreeps.minBy { message.affinity(it) }!!
 
