@@ -1,26 +1,18 @@
 package creeps.purposefulCreeps.roles
 
-import creeps.Status
-import creeps.currentMessage
+import creeps.*
 import creeps.purposefulCreeps.PurposefulCreep
-import creeps.role
-import creeps.status
-import screeps.api.Creep
+import creeps.purposefulCreeps.messages.MailBox
 import screeps.api.Game
 import screeps.api.values
+import screeps.utils.lazyPerTick
 
 open class Role<T : PurposefulCreep>(val spawnBehavior: SpawnBehavior) {
     val mailBox = MailBox<T>()
 
-    val creeps: Array<Creep>
-        get() {
-            return Game.creeps.values.filter { it.memory.role == spawnBehavior.role }.toTypedArray()
-        }
+    val creeps by lazyPerTick { Game.creeps.values.filter { it.memory.role == spawnBehavior.role }.toTypedArray() }
 
-    val purposefulCreeps: Array<T>
-        get() {
-            return creeps.map { it.unsafeCast<T>() }.toTypedArray()
-        }
+    val purposefulCreeps by lazyPerTick { creeps.map { it.purposefulCreep.unsafeCast<T>() }.toTypedArray() }
 
     val roleCount: Int
         get() {
@@ -38,6 +30,12 @@ open class Role<T : PurposefulCreep>(val spawnBehavior: SpawnBehavior) {
                 bestCreep.creep.memory.currentMessage = message
                 bestCreep.creep.memory.status = Status.Active
             }
+        }
+    }
+
+    open fun onReload() {
+        for (creep in purposefulCreeps) {
+            creep.onReload()
         }
     }
 }

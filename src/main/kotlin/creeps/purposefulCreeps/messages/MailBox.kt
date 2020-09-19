@@ -1,4 +1,4 @@
-package creeps.purposefulCreeps.roles
+package creeps.purposefulCreeps.messages
 
 import screeps.api.Identifiable
 
@@ -7,7 +7,7 @@ class MailBox<R : Identifiable> {
 
     val messageCount: Int
         get() {
-            return messages.count()
+            return messages.size
         }
 
 
@@ -38,6 +38,8 @@ class MailBox<R : Identifiable> {
                         messages.add(message.copy())
                     }
                 }
+
+                return message
             }
         }
 

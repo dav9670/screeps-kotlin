@@ -8,20 +8,32 @@ import screeps.utils.isEmpty
 import screeps.utils.unsafe.delete
 import structures.spawns.spawn
 
-/**
- * Entry point
- * is called by screeps
- *
- * must not be removed by DCE
- */
+object Main {
+    val roles = arrayOf(Hauler.RoleCompanion, Miner.RoleCompanion)
+
+    // Used to detect when script is reloaded
+    var initialized = false
+}
+
 @Suppress("unused")
 fun loop() {
+    if (!Main.initialized) {
+        onReload()
+        Main.initialized = true
+    }
+
     if (!Memory.initialized) {
         init()
         Memory.initialized = true
     }
 
     gameLoop()
+}
+
+fun onReload() {
+    for (role in Main.roles) {
+        role.onReload()
+    }
 }
 
 fun init() {}
@@ -31,11 +43,13 @@ fun gameLoop() {
 
     spawn()
 
+    handleMessages()
+
     executeCreeps()
 }
 
 private fun cleanMemory() {
-    if (Game.creeps.isEmpty()) return  // this is needed because Memory.creeps is undefined
+    if (Game.creeps.isEmpty()) return
 
     for ((creepName, _) in Memory.creeps) {
         if (Game.creeps[creepName] == null) {
@@ -47,12 +61,16 @@ private fun cleanMemory() {
 private fun spawn() {
     val mainSpawn: StructureSpawn = Game.spawns.values.firstOrNull() ?: return
 
-    val behaviors = arrayOf(Hauler.spawnBehavior, Miner.spawnBehavior)
-
-    val behavior = behaviors.maxByOrNull { it.spawnPriority }!!
+    val behavior = Main.roles.maxByOrNull { it.spawnBehavior.spawnPriority }!!.spawnBehavior
 
     if (behavior.spawnPriority > 0.0) {
         mainSpawn.spawn(behavior)
+    }
+}
+
+private fun handleMessages() {
+    for (role in Main.roles) {
+        role.handleMessages()
     }
 }
 

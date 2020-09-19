@@ -2,7 +2,8 @@ package creeps.purposefulCreeps.roles.miner
 
 import creeps.Status
 import creeps.purposefulCreeps.PurposefulCreep
-import creeps.purposefulCreeps.roles.Message
+import creeps.purposefulCreeps.messages.Message
+import creeps.purposefulCreeps.messages.NeedCarryMessage
 import creeps.purposefulCreeps.roles.Role
 import creeps.purposefulCreeps.roles.SpawnBehavior
 import creeps.purposefulCreeps.roles.hauler.Hauler
@@ -12,7 +13,7 @@ import memory.sourceSpots
 import screeps.api.*
 import structures.sources.availableSpots
 
-class Miner(creep: Creep) : PurposefulCreep(creep) {
+class Miner(id: String) : PurposefulCreep(id) {
     companion object RoleCompanion : Role<Miner>(object : SpawnBehavior {
         override val spawnPriority: Double
             get() {
@@ -45,13 +46,19 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
         creep.memory.status = Status.Active
     }
 
+
     override fun doRole() {
         if (creep.store.getFreeCapacity() == 0) {
-            Hauler.mailBox.addMessage(NeedCarryMessage(this, Message.Priority.Medium))
+            Hauler.mailBox.addMessage(NeedCarryMessage(id, Message.Priority.Medium))
+            creep.memory.status = Status.Sleeping
             return
         }
 
         creep.harvest()
+    }
+
+    override fun respond(message: Message<*, *>) {
+        TODO("Not yet implemented")
     }
 
     private fun Creep.harvest() {
