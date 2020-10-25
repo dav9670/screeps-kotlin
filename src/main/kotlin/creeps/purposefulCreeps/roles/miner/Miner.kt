@@ -49,7 +49,7 @@ class Miner(id: String) : PurposefulCreep(id) {
 
     override fun doRole() {
         if (creep.store.getFreeCapacity() == 0) {
-            Hauler.mailBox.addMessage(NeedCarryMessage(id, Message.Priority.Medium))
+            Hauler.mailBox.addMessage(NeedCarryMessage(id, Message.Priority.Medium, RESOURCE_ENERGY, creep.store.getUsedCapacity(RESOURCE_ENERGY)!!))
             creep.memory.status = Status.Sleeping
             return
         }
@@ -57,8 +57,12 @@ class Miner(id: String) : PurposefulCreep(id) {
         creep.harvest()
     }
 
-    override fun respond(message: Message<*, *>) {
-        TODO("Not yet implemented")
+    override fun respond(receiver: Identifiable, message: Message<*, *>) {
+        when (message) {
+            is NeedCarryMessage -> {
+                creep.say("\uD83E\uDD20")
+            }
+        }
     }
 
     private fun Creep.harvest() {

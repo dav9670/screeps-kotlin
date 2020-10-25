@@ -44,8 +44,8 @@ abstract class PurposefulCreep(override val id: String) : Identifiable {
 
     open fun onReload() {
         creep.memory.status = Status.Idle
-        creep.memory.currentMessage = null
+        creep.currentMessage = null
     }
 
-    abstract fun respond(message: Message<*, *>)
+    abstract fun respond(receiver: Identifiable, message: Message<*, *>)
 }

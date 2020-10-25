@@ -16,8 +16,7 @@ dependencies {
     implementation("ch.delconte.screeps-kotlin:screeps-kotlin-types:1.9.1")
     implementation(kotlin("stdlib-js"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.0.0-RC")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.0.0-RC")
+    implementation("com.benasher44:uuid:0.2.2")
     testImplementation(kotlin("test-js"))
 }
 

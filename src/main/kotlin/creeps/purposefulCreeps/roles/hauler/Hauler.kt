@@ -32,21 +32,19 @@ class Hauler(id: String) : PurposefulCreep(id) {
     })
 
     override fun doRole() {
-        when (val message = creep.memory.currentMessage) {
+        when (val message = creep.currentMessage) {
             null -> {
                 return
             }
             is NeedCarryMessage -> {
-                console.log(message.sender)
-
                 if (creep.fetch(message.sender.creep, message.resourceType, message.amount)) {
-                    message.sender.respond(message)
+                    message.sender.respond(this, message)
                 }
             }
         }
     }
 
-    override fun respond(message: Message<*, *>) {
+    override fun respond(receiver: Identifiable, message: Message<*, *>) {
         TODO("Not yet implemented")
     }
 

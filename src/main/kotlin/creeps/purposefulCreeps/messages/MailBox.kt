@@ -2,14 +2,14 @@ package creeps.purposefulCreeps.messages
 
 import screeps.api.Identifiable
 
+
 class MailBox<R : Identifiable> {
-    private val messages = mutableListOf<Message<out Identifiable, R>>()
+    private val messages = mutableListOf<Message<*, R>>()
 
     val messageCount: Int
         get() {
             return messages.size
         }
-
 
     val mostUrgentMessage: Message<*, R>?
         get() {
@@ -20,29 +20,31 @@ class MailBox<R : Identifiable> {
         messages.add(message)
     }
 
-    fun popMostUrgentMessage(): Message<*, R>? {
-        return getMostUrgentMessage(true)
+    fun popMostUrgentMessage(removeIf: (message: Message<*, R>) -> Boolean = { true }): Message<*, R>? {
+        val message = mostUrgentMessage
+        if (message != null && removeIf(message))
+            removeMessage(message)
+        return message
     }
 
-    private fun getMostUrgentMessage(pop: Boolean = false): Message<*, R>? {
+    // TODO Sort on add instead of sorting at each getMostUrgentMessage
+    private fun getMostUrgentMessage(): Message<*, R>? {
         for (priority in Message.Priority.values()) {
             val messagesForPriority = messages.filter { it.priority == priority }
             if (messagesForPriority.isNotEmpty()) {
-                val message = messagesForPriority.first()
-
-                if (pop) {
-                    message.repeat--
-                    messages.remove(message)
-
-                    if (message.repeat > 0) {
-                        messages.add(message.copy())
-                    }
-                }
-
-                return message
+                return messagesForPriority.first()
             }
         }
 
         return null
+    }
+
+    private fun removeMessage(message: Message<*, R>) {
+        message.repeat--
+        messages.remove(message)
+
+        if (message.repeat > 0) {
+            messages.add(message.copy())
+        }
     }
 }
