@@ -16,7 +16,6 @@ class MessageStorage : MemoryStorage<String, Message<*, *>>() {
 
     override fun set(value: Message<*, *>): String {
         val key = super.set(value)
-        console.log("set key: " + key + ", sender: " + value.sender.id)
         senderMap[value.sender.id] = senderMap[value.sender.id]?.apply { add(key) } ?: mutableListOf(key)
 
         return key
@@ -26,7 +25,6 @@ class MessageStorage : MemoryStorage<String, Message<*, *>>() {
         val message = get(key)
 
         message?.let {
-            console.log("remove key: " + key + ", sender: " + message.sender.id)
             senderMap[message.sender.id]!!.remove(key)
         }
 

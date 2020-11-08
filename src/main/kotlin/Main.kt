@@ -1,6 +1,4 @@
-import misc.extensions.initialized
-import misc.extensions.purposefulCreep
-import misc.extensions.purposefulSpawn
+import misc.extensions.*
 import purposes.PurposefulConcept
 import purposes.creeps.Hauler
 import purposes.creeps.Miner
@@ -26,14 +24,18 @@ val purposefulConcepts: List<PurposefulConcept>
 
 @Suppress("unused")
 fun loop() {
-    if (!Main.initialized) {
-        onReload()
-        Main.initialized = true
-    }
-
     if (!Memory.initialized) {
         init()
         Memory.initialized = true
+    }
+
+    if (hasRespawned()) {
+        onRespawn()
+    }
+
+    if (!Main.initialized) {
+        onReload()
+        Main.initialized = true
     }
 
     gameLoop()
@@ -41,16 +43,20 @@ fun loop() {
 
 fun init() {}
 
+fun onRespawn() {
+    Memory.onRespawn()
+}
+
 fun gameLoop() {
+    Main.roles.forEach {
+        console.log(it)
+    }
+
     cleanMemory()
 
     handleMessages()
 
     executePurposes()
-
-    if (Game.time % 5 == 0) {
-        console.log(PurposefulSpawn.mailBox.toString())
-    }
 }
 
 private fun cleanMemory() {
@@ -79,4 +85,8 @@ private fun executePurposes() {
     for (purposefulBeing in purposefulConcepts) {
         purposefulBeing.execute()
     }
+}
+
+private fun hasRespawned(): Boolean {
+    return Memory.mainSpawnId != Game.spawns.values.first().id
 }

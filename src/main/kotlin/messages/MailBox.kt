@@ -1,9 +1,10 @@
 package messages
 
+import com.benasher44.uuid.uuid4
 import storage.StorageHolder
 
 
-class MailBox<R : Receiver> {
+class MailBox<R : Receiver>(private val name: String = uuid4().toString()) {
     private val messageKeys = mutableListOf<String>()
     private val messages: Map<String, Message<*, R>>
         get() = messageKeys.map { it to getMessage(it) }.toMap()
@@ -52,6 +53,16 @@ class MailBox<R : Receiver> {
     }
 
     override fun toString(): String {
-        return "MailBox(messageKeys=$messageKeys)"
+        val text =
+                """
+
+$name = {
+    messages (${messageKeys.count()}) = [ 
+${messages.values.joinToString("\n").prependIndent("\t")}
+    ]
+}
+""".trimIndent()
+
+        return text
     }
 }

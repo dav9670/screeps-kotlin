@@ -11,7 +11,7 @@ import purposes.Status
 import screeps.api.*
 
 class Miner(creep: Creep) : PurposefulCreep(creep) {
-    companion object CreepRoleCompanion : CreepRole<Miner>() {
+    companion object CreepRoleCompanion : CreepRole<Miner>(Miner::class.simpleName!!) {
         override fun spawnNeeds(): List<NeedSpawnMessage> {
             if (Miner.roleCount == 0) {
                 return listOf(NeedSpawnMessage(this, Message.Priority.Critical))
@@ -24,8 +24,6 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
             return listOf()
         }
 
-        override val roleName: String
-            get() = Miner::class.simpleName!!
         override val parts: Array<BodyPartConstant>
             get() = arrayOf(CARRY, WORK, MOVE)
     }
@@ -44,7 +42,7 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
 
     override fun doRole() {
         if (creep.store.getFreeCapacity() == 0) {
-            Hauler.mailBox.addMessage(NeedCarryMessage(this, Message.Priority.Medium, RESOURCE_ENERGY, creep.store.getUsedCapacity(RESOURCE_ENERGY)!!))
+            Hauler.mailBox.addMessage(NeedCarryMessage(this, Message.Priority.Medium))
             creep.memory.status = Status.Sleeping
             return
         }
@@ -56,6 +54,8 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
         when (message) {
             is NeedCarryMessage -> {
                 creep.say("\uD83E\uDD20")
+
+                creep.memory.status = Status.Active
             }
         }
     }

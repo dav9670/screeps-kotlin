@@ -1,6 +1,7 @@
 package purposes.structures.spawns
 
 import messages.Message
+import messages.NeedResourceMessage
 import messages.NeedSpawnMessage
 import misc.extensions.currentMessage
 import misc.extensions.currentMessageKey
@@ -8,17 +9,16 @@ import misc.extensions.spawn
 import misc.extensions.status
 import purposes.PurposefulBeing
 import purposes.Status
-import screeps.api.ERR_NOT_ENOUGH_ENERGY
-import screeps.api.Identifiable
-import screeps.api.OK
-import screeps.api.RoomObject
+import purposes.creeps.Hauler
+import screeps.api.*
 import screeps.api.structures.StructureSpawn
 
-class PurposefulSpawn(val spawn: StructureSpawn) : Identifiable by spawn, RoomObject by spawn, PurposefulBeing {
-    companion object SpawnRoleCompanion : SpawnRole()
+class PurposefulSpawn(val spawn: StructureSpawn) : StoreOwner by spawn, PurposefulBeing {
+    companion object SpawnRoleCompanion : SpawnRole(PurposefulSpawn::class.simpleName!!)
+
+    override val gameObject: StoreOwner = spawn
 
     override fun respond(receiver: Identifiable, message: Message<*, *>) {
-        TODO("Not yet implemented")
     }
 
     override fun init() {
@@ -37,7 +37,8 @@ class PurposefulSpawn(val spawn: StructureSpawn) : Identifiable by spawn, RoomOb
                             message.step = NeedSpawnMessage.Step.SPAWNING
                         }
                         ERR_NOT_ENOUGH_ENERGY -> {
-
+                            //TODO Change amount
+                            Hauler.mailBox.addMessage(NeedResourceMessage(this, Message.Priority.High, RESOURCE_ENERGY, 200))
                         }
                     }
                 }
@@ -57,5 +58,9 @@ class PurposefulSpawn(val spawn: StructureSpawn) : Identifiable by spawn, RoomOb
     private fun onMessageFinished() {
         spawn.memory.status = Status.Idle
         spawn.currentMessage = null
+    }
+
+    override fun toString(): String {
+        return "PurposefulSpawn = {$id}"
     }
 }

@@ -10,7 +10,7 @@ import purposes.Status
 import screeps.api.Game
 import screeps.api.values
 
-open class SpawnRole(mailBox: MailBox<PurposefulSpawn> = MailBox()) : Role<PurposefulSpawn>(mailBox) {
+open class SpawnRole(roleName: String, mailBox: MailBox<PurposefulSpawn> = MailBox(roleName)) : Role<PurposefulSpawn>(roleName, mailBox) {
     override val purposefulBeings: List<PurposefulSpawn>
         get() = Game.spawns.values.map { it.purposefulSpawn }
     override val availableBeings: List<PurposefulSpawn>

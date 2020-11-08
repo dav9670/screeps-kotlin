@@ -9,20 +9,19 @@ import purposes.PurposefulBeing
 import purposes.Status
 import screeps.api.BodyPartConstant
 import screeps.api.Creep
-import screeps.api.Identifiable
-import screeps.api.RoomObject
+import screeps.api.StoreOwner
 
-abstract class PurposefulCreep(val creep: Creep) : Identifiable by creep, RoomObject by creep, PurposefulBeing {
-    companion object CreepRoleCompanion : CreepRole<PurposefulCreep>() {
+abstract class PurposefulCreep(val creep: Creep) : StoreOwner by creep, PurposefulBeing {
+    companion object CreepRoleCompanion : CreepRole<PurposefulCreep>(PurposefulCreep::class.simpleName!!) {
         override fun spawnNeeds(): List<NeedSpawnMessage> {
             return listOf()
         }
 
-        override val roleName: String
-            get() = PurposefulCreep::class.simpleName!!
         override val parts: Array<BodyPartConstant>
             get() = arrayOf()
     }
+
+    override val gameObject: StoreOwner = creep
 
     override fun init() {}
 
@@ -50,5 +49,9 @@ abstract class PurposefulCreep(val creep: Creep) : Identifiable by creep, RoomOb
     open fun onMessageFinished() {
         creep.memory.status = Status.Idle
         creep.currentMessage = null
+    }
+
+    override fun toString(): String {
+        return "PurposefulCreep = {$id}"
     }
 }

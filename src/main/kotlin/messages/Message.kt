@@ -31,6 +31,9 @@ abstract class Message<S : Sender, in R : Receiver> {
         return result
     }
 
+    override fun toString(): String {
+        return "Message(sender=$sender, priority=$priority)"
+    }
 
     enum class Priority {
         Critical,

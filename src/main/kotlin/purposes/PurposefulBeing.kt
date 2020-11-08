@@ -1,5 +1,7 @@
 package purposes
 
-import screeps.api.RoomObject
+import screeps.api.StoreOwner
 
-interface PurposefulBeing : PurposefulConcept, RoomObject
+interface PurposefulBeing : PurposefulConcept, StoreOwner {
+    val gameObject: StoreOwner
+}

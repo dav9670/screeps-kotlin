@@ -16,7 +16,7 @@ import screeps.api.Game
 import screeps.api.values
 import storage.StorageHolder
 
-abstract class CreepRole<T : PurposefulCreep>(mailBox: MailBox<T> = MailBox()) : Role<T>(mailBox) {
+abstract class CreepRole<T : PurposefulCreep>(roleName: String, mailBox: MailBox<T> = MailBox(roleName)) : Role<T>(roleName, mailBox) {
     val creeps: List<Creep>
         get() = Game.creeps.values.filter { it.memory.role == roleName }
     override val purposefulBeings: List<T>
@@ -24,12 +24,11 @@ abstract class CreepRole<T : PurposefulCreep>(mailBox: MailBox<T> = MailBox()) :
     override val availableBeings: List<T>
         get() = purposefulBeings.filter { it.creep.memory.status == Status.Idle || it.creep.memory.status == Status.Sleeping }
     open val tickBetweenSpawnNeeds: Int = 5
-    val creepsWaitingToSpawn: Int
+    private val creepsWaitingToSpawn: Int
         get() = StorageHolder.messages.messagesForSender(this).filter { it.second is NeedSpawnMessage }.count()
     val roleCountAndSpawning: Int
         get() = roleCount + creepsWaitingToSpawn
 
-    abstract val roleName: String
     abstract val parts: Array<BodyPartConstant>
 
     override fun messageChosen(being: T, message: Message<*, *>) {
@@ -45,8 +44,5 @@ abstract class CreepRole<T : PurposefulCreep>(mailBox: MailBox<T> = MailBox()) :
         }
     }
 
-    /**
-     * @return A set of NeedSpawnMessage
-     */
     abstract fun spawnNeeds(): List<NeedSpawnMessage>
 }

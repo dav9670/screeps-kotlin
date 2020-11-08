@@ -5,7 +5,7 @@ import messages.MailBox
 import messages.Message
 import screeps.api.Identifiable
 
-abstract class Role<T : PurposefulBeing>(val mailBox: MailBox<T> = MailBox()) : PurposefulConcept {
+abstract class Role<T : PurposefulBeing>(val roleName: String, val mailBox: MailBox<T>) : PurposefulConcept {
     abstract val purposefulBeings: List<T>
     abstract val availableBeings: List<T>
     final override val id: String = uuid4().toString()
@@ -42,4 +42,19 @@ abstract class Role<T : PurposefulBeing>(val mailBox: MailBox<T> = MailBox()) : 
     override fun execute() {}
 
     override fun onReload() {}
+
+    override fun toString(): String {
+        val text =
+                """
+                    
+Role = {
+    id = '$id',
+    roleName = '$roleName', 
+    mailBox = ${mailBox.toString().prependIndent("\t")},
+    purposefulBeings = ${purposefulBeings.count()}, 
+    availableBeings = ${availableBeings.count()}
+}
+""".trimIndent()
+        return text
+    }
 }
