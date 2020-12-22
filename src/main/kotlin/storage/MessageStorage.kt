@@ -10,7 +10,7 @@ class MessageStorage : MemoryStorage<String, Message<*, *>>() {
 
     private val senderMap: MutableMap<String, MutableList<String>> = mutableMapOf()
 
-    override fun generateKey(): String {
+    override fun generateKey(value: Message<*, *>): String {
         return uuid4().toString()
     }
 
@@ -31,9 +31,9 @@ class MessageStorage : MemoryStorage<String, Message<*, *>>() {
         super.remove(key)
     }
 
-    fun messagesForSender(sender: Sender): List<Pair<String, Message<*, *>>> {
+    fun messagesForSender(sender: Sender): Collection<Pair<String, Message<*, *>>> {
         val messages = senderMap[sender.id]?.map { it to map[it]!! }
 
-        return messages ?: listOf()
+        return messages ?: emptyList()
     }
 }

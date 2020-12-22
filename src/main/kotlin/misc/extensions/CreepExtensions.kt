@@ -11,10 +11,9 @@ import screeps.utils.memory.memory
 import storage.StorageHolder
 
 /* Creep.memory */
-var CreepMemory.role by memory { PurposefulCreep.roleName }
+var CreepMemory.role by memory { "" }
 var CreepMemory.targetId by memory { "" }
-var CreepMemory.initialized by memory { false }
-var CreepMemory.status by memory(Status.Idle)
+var CreepMemory.status by memory(Status.Created)
 var CreepMemory.currentMessageKey by memory<String?>()
 
 val Creep.purposefulCreep: PurposefulCreep

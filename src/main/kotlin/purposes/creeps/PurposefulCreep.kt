@@ -1,25 +1,20 @@
 package purposes.creeps
 
-import messages.NeedSpawnMessage
 import misc.extensions.currentMessage
 import misc.extensions.currentMessageKey
-import misc.extensions.initialized
 import misc.extensions.status
 import purposes.PurposefulBeing
 import purposes.Status
-import screeps.api.BodyPartConstant
 import screeps.api.Creep
+import screeps.api.Game
 import screeps.api.StoreOwner
+import screeps.api.get
+import screeps.utils.lazyPerTick
 
-abstract class PurposefulCreep(val creep: Creep) : StoreOwner by creep, PurposefulBeing {
-    companion object CreepRoleCompanion : CreepRole<PurposefulCreep>(PurposefulCreep::class.simpleName!!) {
-        override fun spawnNeeds(): List<NeedSpawnMessage> {
-            return listOf()
-        }
+abstract class PurposefulCreep(creep: Creep) : PurposefulBeing {
+    private val creepName: String = creep.name
 
-        override val parts: Array<BodyPartConstant>
-            get() = arrayOf()
-    }
+    val creep: Creep by lazyPerTick { Game.creeps[creepName]!! }
 
     override val gameObject: StoreOwner = creep
 
@@ -29,13 +24,14 @@ abstract class PurposefulCreep(val creep: Creep) : StoreOwner by creep, Purposef
         if (creep.spawning)
             return
 
-        if (!creep.memory.initialized) {
-            init()
-            creep.memory.initialized = true
-        }
-
-        if (creep.memory.status != Status.Sleeping) {
-            doRole()
+        when (creep.memory.status) {
+            Status.Created -> {
+                init()
+                creep.memory.status = Status.Idle
+            }
+            Status.Sleeping -> {
+                doRole()
+            }
         }
     }
 

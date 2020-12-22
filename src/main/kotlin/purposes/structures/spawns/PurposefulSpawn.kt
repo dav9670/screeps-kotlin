@@ -13,7 +13,7 @@ import purposes.creeps.Hauler
 import screeps.api.*
 import screeps.api.structures.StructureSpawn
 
-class PurposefulSpawn(val spawn: StructureSpawn) : StoreOwner by spawn, PurposefulBeing {
+class PurposefulSpawn(val spawn: StructureSpawn) : PurposefulBeing, StoreOwner by spawn {
     companion object SpawnRoleCompanion : SpawnRole(PurposefulSpawn::class.simpleName!!)
 
     override val gameObject: StoreOwner = spawn

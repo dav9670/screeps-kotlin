@@ -9,7 +9,7 @@ abstract class MemoryStorage<K, V> : Storage<K, V> {
     }
 
     override fun set(value: V): K {
-        val key = generateKey()
+        val key = generateKey(value)
         map[key] = value
         return key
     }
@@ -18,5 +18,13 @@ abstract class MemoryStorage<K, V> : Storage<K, V> {
         map.remove(key)
     }
 
-    protected abstract fun generateKey(): K
+    protected abstract fun generateKey(value: V): K
+
+    override fun getAll(): Collection<V> {
+        return map.values
+    }
+
+    override fun toMap(): Map<K, V> {
+        return map
+    }
 }

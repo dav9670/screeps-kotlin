@@ -8,4 +8,8 @@ interface Storage<K, V> {
     fun set(value: V): K
 
     fun remove(key: K)
+
+    fun getAll(): Collection<V>
+
+    fun toMap(): Map<K, V>
 }
