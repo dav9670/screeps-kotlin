@@ -11,7 +11,7 @@ import screeps.api.StoreOwner
 import screeps.api.get
 import screeps.utils.lazyPerTick
 
-abstract class PurposefulCreep(creep: Creep) : PurposefulBeing {
+abstract class PurposefulCreep(creep: Creep) : PurposefulBeing, StoreOwner by creep {
     private val creepName: String = creep.name
 
     val creep: Creep by lazyPerTick { Game.creeps[creepName]!! }

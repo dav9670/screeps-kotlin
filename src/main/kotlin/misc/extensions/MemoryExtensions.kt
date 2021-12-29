@@ -18,5 +18,5 @@ fun Memory.onRespawn() {
 
 fun getSourceSpots(): Int {
     val mainRoomSources = Game.rooms.values[0].find(FIND_SOURCES)
-    return mainRoomSources.sumBy { it.noWallSpots() }
+    return mainRoomSources.sumOf { it.noWallSpots() }
 }

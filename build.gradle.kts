@@ -2,22 +2,25 @@ import org._10ne.gradle.rest.RestTask
 import java.util.*
 
 plugins {
-    kotlin("js") version "1.4.0"
+    kotlin("js") version "1.6.10"
     id("org.tenne.rest") version "0.4.2"
-    kotlin("plugin.serialization") version "1.4.0"
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 repositories {
     mavenLocal()
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
     implementation("ch.delconte.screeps-kotlin:screeps-kotlin-types:1.9.1")
-    implementation(kotlin("stdlib-js"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")
-    implementation("com.benasher44:uuid:0.2.2")
-    testImplementation(kotlin("test-js"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-js:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("com.benasher44:uuid:0.3.1")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test-js:1.6.0")
 }
 
 val screepsUser: String? by project

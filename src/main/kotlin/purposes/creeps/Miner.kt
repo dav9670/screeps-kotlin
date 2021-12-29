@@ -39,7 +39,6 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
         creep.memory.status = Status.Active
     }
 
-
     override fun doRole() {
         if (creep.store.getFreeCapacity() == 0) {
             Hauler.mailBox.addMessage(NeedCarryMessage(this, Message.Priority.Medium))
