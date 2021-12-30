@@ -48,9 +48,9 @@ fun onRespawn() {
 }
 
 fun gameLoop() {
-    Main.roles.forEach {
-        console.log(it)
-    }
+//    Main.roles.forEach {
+//        console.log(it)
+//    }
 
     cleanMemory()
 

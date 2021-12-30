@@ -14,8 +14,8 @@ class MessageStorage : MemoryStorage<String, Message<*, *>>() {
         return uuid4().toString()
     }
 
-    override fun set(value: Message<*, *>): String {
-        val key = super.set(value)
+    override fun set(value: Message<*, *>, key: String): String {
+        super.set(value, key)
         senderMap[value.sender.id] = senderMap[value.sender.id]?.apply { add(key) } ?: mutableListOf(key)
 
         return key
@@ -31,7 +31,7 @@ class MessageStorage : MemoryStorage<String, Message<*, *>>() {
         super.remove(key)
     }
 
-    fun messagesForSender(sender: Sender): Collection<Pair<String, Message<*, *>>> {
+    fun messagesFrom(sender: Sender): Collection<Pair<String, Message<*, *>>> {
         val messages = senderMap[sender.id]?.map { it to map[it]!! }
 
         return messages ?: emptyList()

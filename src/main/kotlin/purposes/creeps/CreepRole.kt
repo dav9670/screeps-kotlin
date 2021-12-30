@@ -25,7 +25,7 @@ abstract class CreepRole<T : PurposefulCreep>(roleName: String, mailBox: MailBox
         get() = purposefulBeings.filter { it.creep.memory.status == Status.Idle || it.creep.memory.status == Status.Sleeping }
     open val tickBetweenSpawnNeeds: Int = 5
     private val creepsWaitingToSpawn: Int
-        get() = StorageHolder.messages.messagesForSender(this).filter { it.second is NeedSpawnMessage }.count()
+        get() = StorageHolder.messages.messagesFrom(this).count { it.second is NeedSpawnMessage }
     val roleCountAndSpawning: Int
         get() = roleCount + creepsWaitingToSpawn
 

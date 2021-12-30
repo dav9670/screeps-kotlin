@@ -7,7 +7,7 @@ import storage.StorageHolder
 class MailBox<R : Receiver>(private val name: String = uuid4().toString()) {
     private val messageKeys = mutableListOf<String>()
     private val messages: Map<String, Message<*, R>>
-        get() = messageKeys.map { it to getMessage(it) }.toMap()
+        get() = messageKeys.associateWith { getMessage(it) }
 
     val messageCount: Int
         get() {
@@ -29,6 +29,10 @@ class MailBox<R : Receiver>(private val name: String = uuid4().toString()) {
     fun addMessage(message: Message<*, R>) {
         val key = StorageHolder.messages.set(message)
         messageKeys.add(key)
+    }
+
+    fun keyExists(key: String) : Boolean{
+        return messageKeys.contains(key)
     }
 
     fun popMostUrgentMessage(removeIf: (message: Message<*, R>) -> Boolean = { true }): Message<*, R>? {

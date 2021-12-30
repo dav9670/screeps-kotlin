@@ -5,7 +5,11 @@ interface Storage<K, V> {
 
     fun get(key: K): V?
 
-    fun set(value: V): K
+    fun set(value: V, key: K = generateKey(value)): K
+
+    fun containsKey(key: K): Boolean
+
+    fun generateKey(value: V): K
 
     fun remove(key: K)
 
