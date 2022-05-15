@@ -4,6 +4,9 @@ package storage
 abstract class MemoryStorage<K, V> : Storage<K, V> {
     protected val map: MutableMap<K, V> = mutableMapOf()
 
+    final override val size: Int
+        get() = map.size
+
     final override fun get(key: K): V? {
         return map[key]
     }

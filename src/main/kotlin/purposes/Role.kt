@@ -1,11 +1,11 @@
 package purposes
 
 import com.benasher44.uuid.uuid4
-import messages.MailBox
-import messages.Message
-import screeps.api.Identifiable
+import notices.Board
+import notices.Notice
+import notices.Ticket
 
-abstract class Role<T : PurposefulBeing>(val roleName: String, val mailBox: MailBox<T>) : PurposefulConcept {
+abstract class Role<T : PurposefulBeing>(val roleName: String, val board: Board<T>) : PurposefulConcept {
     abstract val purposefulBeings: List<T>
     abstract val availableBeings: List<T>
     final override val id: String = uuid4().toString()
@@ -15,27 +15,44 @@ abstract class Role<T : PurposefulBeing>(val roleName: String, val mailBox: Mail
             return purposefulBeings.size
         }
 
-    fun handleMessages() {
-        if (mailBox.messageCount > 0) {
+    open fun handleMessages() {
+        if (board.size > 0) {
             if (availableBeings.isNotEmpty()) {
-                mailBox.popMostUrgentMessage { message: Message<*, T> ->
-                    val bestBeing = availableBeings.maxByOrNull { message.affinity(it) }!!
 
-                    if (message.affinity(bestBeing) == 0.0) {
-                        return@popMostUrgentMessage false
-                    }
-
-                    messageChosen(bestBeing, message)
-
-                    return@popMostUrgentMessage true
-                }
             }
         }
     }
 
-    abstract fun messageChosen(being: T, message: Message<*, *>)
+    private fun getTickets(beings: Collection<T>): Map<T, Ticket<*>> {
+        // TODO This is a greedy solution, should implement A* maybe?
 
-    override fun respond(receiver: Identifiable, message: Message<*, *>) {}
+        val affinityMatrix = mutableListOf<Pair<Pair<T, Notice<*, T>>, Double>>()
+
+        for(being in beings) {
+            affinityMatrix.addAll(board.affinities(being).map { (being to it.first) to it.second })
+        }
+
+        affinityMatrix.sortBy { it.second }
+
+        val tickets = mutableMapOf<T, Ticket<*>>()
+
+        for(affinityStruct in affinityMatrix) {
+            val being = affinityStruct.first.first
+            val notice = affinityStruct.first.second
+
+            // TODO Check if notice is still valid
+            if(!tickets.contains(being)) {
+                val ticket = createTicket(being, notice)
+                tickets[being] = ticket
+            }
+        }
+
+        return tickets
+    }
+
+    abstract fun createTicket(being: T, notice: Notice<*, T>): Ticket<*>
+
+    abstract fun ticketChosen(being: T, ticket: Ticket<*>)
 
     override fun init() {}
 
@@ -44,17 +61,15 @@ abstract class Role<T : PurposefulBeing>(val roleName: String, val mailBox: Mail
     override fun onReload() {}
 
     override fun toString(): String {
-        val text =
-                """
-                    
+        return """
+            
 Role = {
     id = '$id',
     roleName = '$roleName', 
-    mailBox = ${mailBox.toString().prependIndent("\t")},
+    mailBox = ${board.toString().prependIndent("\t")},
     purposefulBeings = ${purposefulBeings.count()}, 
     availableBeings = ${availableBeings.count()}
 }
 """.trimIndent()
-        return text
     }
 }

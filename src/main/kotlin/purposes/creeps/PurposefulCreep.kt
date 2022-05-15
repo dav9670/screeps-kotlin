@@ -1,7 +1,7 @@
 package purposes.creeps
 
-import misc.extensions.currentMessage
-import misc.extensions.currentMessageKey
+import misc.extensions.currentTicket
+import misc.extensions.currentTicketKey
 import misc.extensions.status
 import purposes.PurposefulBeing
 import purposes.Status
@@ -29,7 +29,7 @@ abstract class PurposefulCreep(creep: Creep) : PurposefulBeing, StoreOwner by cr
                 init()
                 creep.memory.status = Status.Idle
             }
-            Status.Sleeping -> {
+            Status.Active -> {
                 doRole()
             }
         }
@@ -39,12 +39,12 @@ abstract class PurposefulCreep(creep: Creep) : PurposefulBeing, StoreOwner by cr
 
     override fun onReload() {
         creep.memory.status = Status.Idle
-        creep.memory.currentMessageKey = null
+        creep.memory.currentTicketKey = null
     }
 
-    open fun onMessageFinished() {
+    open fun onTicketFinished() {
         creep.memory.status = Status.Idle
-        creep.currentMessage = null
+        creep.currentTicket = null
     }
 
     override fun toString(): String {

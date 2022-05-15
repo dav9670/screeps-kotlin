@@ -1,12 +1,14 @@
 package purposes.structures.spawns
 
-import messages.Message
-import messages.NeedResourceMessage
-import messages.NeedSpawnMessage
-import misc.extensions.currentMessage
-import misc.extensions.currentMessageKey
+import misc.extensions.currentTicket
+import misc.extensions.currentTicketKey
+import notices.Notice
+import notices.types.NeedResourceNotice
+import notices.types.NeedSpawnNotice
 import misc.extensions.spawn
 import misc.extensions.status
+import notices.Ticket
+import notices.types.NeedSpawnTicket
 import purposes.PurposefulBeing
 import purposes.Status
 import purposes.creeps.Hauler
@@ -18,33 +20,30 @@ class PurposefulSpawn(val spawn: StructureSpawn) : PurposefulBeing, StoreOwner b
 
     override val gameObject: StoreOwner = spawn
 
-    override fun respond(receiver: Identifiable, message: Message<*, *>) {
-    }
-
     override fun init() {
     }
 
     override fun execute() {
-        when (val message = spawn.currentMessage) {
+        when (val ticket = spawn.currentTicket) {
             null -> {
                 return
             }
-            is NeedSpawnMessage -> {
+            is NeedSpawnTicket -> {
                 // Before spawn start spawning
-                if (message.step == NeedSpawnMessage.Step.START) {
-                    when (spawn.spawn(message.sender.roleName, message.parts)) {
+                if (ticket.step == NeedSpawnTicket.Step.START) {
+                    when (spawn.spawn(ticket.notice.sender.roleName, ticket.notice.parts)) {
                         OK -> {
-                            message.step = NeedSpawnMessage.Step.SPAWNING
+                            ticket.step = NeedSpawnTicket.Step.SPAWNING
                         }
                         ERR_NOT_ENOUGH_ENERGY -> {
                             //TODO Change amount
-                            Hauler.mailBox.addMessage(NeedResourceMessage(this, Message.Priority.High, RESOURCE_ENERGY, 200))
+                            Hauler.board.addNotice(NeedResourceNotice(this, Notice.Priority.High, RESOURCE_ENERGY, 200))
                         }
                     }
                 }
 
-                if (message.step == NeedSpawnMessage.Step.SPAWNING && spawn.spawning == null) {
-                    onMessageFinished()
+                if (ticket.step == NeedSpawnTicket.Step.SPAWNING && spawn.spawning == null) {
+                    onTicketFinished()
                 }
             }
         }
@@ -52,12 +51,16 @@ class PurposefulSpawn(val spawn: StructureSpawn) : PurposefulBeing, StoreOwner b
 
     override fun onReload() {
         spawn.memory.status = Status.Idle
-        spawn.memory.currentMessageKey = null
+        spawn.memory.currentTicketKey = null
     }
 
-    private fun onMessageFinished() {
+    override fun respond(receiver: Identifiable, ticket: Ticket<*>) {
+        TODO("Not yet implemented")
+    }
+
+    private fun onTicketFinished() {
         spawn.memory.status = Status.Idle
-        spawn.currentMessage = null
+        spawn.currentTicket = null
     }
 
     override fun toString(): String {

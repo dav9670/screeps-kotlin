@@ -3,6 +3,8 @@ package storage
 interface Storage<K, V> {
     val tableName: String
 
+    val size: Int
+
     fun get(key: K): V?
 
     fun set(value: V, key: K = generateKey(value)): K

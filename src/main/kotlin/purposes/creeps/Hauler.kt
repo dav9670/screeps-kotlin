@@ -1,21 +1,20 @@
 package purposes.creeps
 
-import messages.Message
-import messages.NeedCarryMessage
-import messages.NeedResourceMessage
-import messages.NeedSpawnMessage
-import misc.extensions.currentMessage
+import notices.Notice
+import misc.extensions.currentTicket
+import notices.Ticket
+import notices.types.*
 import screeps.api.*
 
 class Hauler(creep: Creep) : PurposefulCreep(creep) {
     companion object CreepRoleCompanion : CreepRole<Hauler>(Hauler::class.simpleName!!) {
-        override fun spawnNeeds(): List<NeedSpawnMessage> {
-            if (Hauler.mailBox.messageCount == 0) {
+        override fun spawnNeeds(): List<NeedSpawnNotice> {
+            if (Hauler.board.size == 0) {
                 return listOf()
             }
 
             if (Hauler.roleCountAndSpawning < (Miner.roleCount + 1) / 2) {
-                return listOf(NeedSpawnMessage(this, Message.Priority.High))
+                return listOf(NeedSpawnNotice(this, Notice.Priority.High))
             }
 
             return listOf()
@@ -23,31 +22,42 @@ class Hauler(creep: Creep) : PurposefulCreep(creep) {
 
         override val parts: Array<BodyPartConstant>
             get() = arrayOf(MOVE, CARRY)
+
+        override fun createTicket(being: Hauler, notice: Notice<*, Hauler>): Ticket<*> {
+            return when(notice){
+                is NeedCarryNotice -> {
+                    notice.takeTicket(mapOf(AmountNotice.Params.AMOUNT.name to being.creep.store.getFreeCapacity()))
+                }
+                is NeedResourceNotice -> {
+                    notice.takeTicket(mapOf(AmountNotice.Params.AMOUNT.name to being.creep.store.getUsedCapacity(notice.resourceType)!!))
+                }
+                else -> throw Exception(Hauler::class.simpleName + " does not handle " + notice::class.simpleName + " notices")
+            }
+        }
     }
 
     override fun doRole() {
-        when (val message = creep.currentMessage) {
+        when (val ticket = creep.currentTicket) {
             null -> {
                 return
             }
-            is NeedCarryMessage -> {
-                if (creep.fetch(message.sender.creep, message.resourceType, message.amount)) {
-                    message.sender.respond(this, message)
-                    onMessageFinished()
+            is NeedCarryTicket -> {
+                if (creep.fetch(ticket.notice.sender.creep, ticket.notice.resourceType, ticket.amount)) {
+                    ticket.notice.sender.respond(this, ticket)
+                    onTicketFinished()
                 }
             }
-            is NeedResourceMessage -> {
-                val resourceType = message.resourceType
-                val matchingResourceAvailableQuantity = creep.store.getUsedCapacity(message.resourceType)!!
-                if (creep.give(message.sender.gameObject, resourceType, matchingResourceAvailableQuantity)) {
-                    message.sender.respond(this, message)
-                    onMessageFinished()
+            is NeedResourceTicket -> {
+                val resourceType = ticket.notice.resourceType
+                if (creep.give(ticket.notice.sender.gameObject, resourceType, ticket.amount)) {
+                    ticket.notice.sender.respond(this, ticket)
+                    onTicketFinished()
                 }
             }
         }
     }
 
-    override fun respond(receiver: Identifiable, message: Message<*, *>) {
+    override fun respond(receiver: Identifiable, ticket: Ticket<*>) {
         TODO("Not yet implemented")
     }
 

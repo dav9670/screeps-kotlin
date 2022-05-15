@@ -1,22 +1,18 @@
 package purposes.creeps
 
-import messages.MailBox
-import messages.Message
-import messages.NeedSpawnMessage
-import misc.extensions.currentMessage
+import misc.extensions.currentTicket
+import notices.Board
+import notices.types.NeedSpawnNotice
 import misc.extensions.purposefulCreep
 import misc.extensions.role
 import misc.extensions.status
+import notices.Ticket
 import purposes.Role
 import purposes.Status
 import purposes.structures.spawns.PurposefulSpawn
-import screeps.api.BodyPartConstant
-import screeps.api.Creep
-import screeps.api.Game
-import screeps.api.values
-import storage.StorageHolder
+import screeps.api.*
 
-abstract class CreepRole<T : PurposefulCreep>(roleName: String, mailBox: MailBox<T> = MailBox(roleName)) : Role<T>(roleName, mailBox) {
+abstract class CreepRole<T : PurposefulCreep>(roleName: String, board: Board<T> = Board(roleName)) : Role<T>(roleName, board) {
     val creeps: List<Creep>
         get() = Game.creeps.values.filter { it.memory.role == roleName }
     override val purposefulBeings: List<T>
@@ -24,15 +20,16 @@ abstract class CreepRole<T : PurposefulCreep>(roleName: String, mailBox: MailBox
     override val availableBeings: List<T>
         get() = purposefulBeings.filter { it.creep.memory.status == Status.Idle || it.creep.memory.status == Status.Sleeping }
     open val tickBetweenSpawnNeeds: Int = 5
+    // TODO Will only count message on board, not message accepted
     private val creepsWaitingToSpawn: Int
-        get() = StorageHolder.messages.messagesFrom(this).count { it.second is NeedSpawnMessage }
+        get() = PurposefulSpawn.board.noticesFrom(this).size
     val roleCountAndSpawning: Int
         get() = roleCount + creepsWaitingToSpawn
 
     abstract val parts: Array<BodyPartConstant>
 
-    override fun messageChosen(being: T, message: Message<*, *>) {
-        being.creep.currentMessage = message
+    override fun ticketChosen(being: T, ticket: Ticket<*>) {
+        being.creep.currentTicket = ticket
         being.creep.memory.status = Status.Active
     }
 
@@ -40,9 +37,13 @@ abstract class CreepRole<T : PurposefulCreep>(roleName: String, mailBox: MailBox
         super.execute()
 
         if ((Game.time % tickBetweenSpawnNeeds) == 0) {
-            spawnNeeds().forEach { PurposefulSpawn.mailBox.addMessage(it) }
+            spawnNeeds().forEach { PurposefulSpawn.board.addNotice(it) }
         }
     }
 
-    abstract fun spawnNeeds(): List<NeedSpawnMessage>
+    abstract fun spawnNeeds(): List<NeedSpawnNotice>
+
+    override fun respond(receiver: Identifiable, ticket: Ticket<*>) {
+        TODO("Not yet implemented")
+    }
 }

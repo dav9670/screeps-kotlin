@@ -2,6 +2,7 @@ package storage
 
 class StorageHolder {
     companion object Factory {
-        val messages = MessageStorage()
+        val notices = mapOf<String, NoticeStorage<*>>()
+        val tickets = TicketStorage()
     }
 }

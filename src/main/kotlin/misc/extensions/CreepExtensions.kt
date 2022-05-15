@@ -1,6 +1,6 @@
 package misc.extensions
 
-import messages.Message
+import notices.Ticket
 import purposes.Status
 import purposes.creeps.Hauler
 import purposes.creeps.Miner
@@ -14,7 +14,7 @@ import storage.StorageHolder
 var CreepMemory.role by memory { "" }
 var CreepMemory.targetId by memory { "" }
 var CreepMemory.status by memory(Status.Created)
-var CreepMemory.currentMessageKey by memory<String?>()
+var CreepMemory.currentTicketKey by memory<String?>()
 
 val Creep.purposefulCreep: PurposefulCreep
     get() {
@@ -25,11 +25,11 @@ val Creep.purposefulCreep: PurposefulCreep
         }
     }
 
-var Creep.currentMessage: Message<*, *>?
+var Creep.currentTicket: Ticket<*>?
     get() {
-        return memory.currentMessageKey?.let { StorageHolder.messages.get(it) }
+        return memory.currentTicketKey?.let { StorageHolder.tickets.get(it) }
     }
     set(value) {
-        memory.currentMessageKey?.let { StorageHolder.messages.remove(it) }
-        memory.currentMessageKey = value?.let { StorageHolder.messages.set(it) }
+        memory.currentTicketKey?.let { StorageHolder.tickets.remove(it) }
+        memory.currentTicketKey = value?.let { StorageHolder.tickets.set(it) }
     }

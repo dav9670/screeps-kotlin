@@ -1,7 +1,7 @@
 package purposes
 
-import messages.Receiver
-import messages.Sender
+import notices.Receiver
+import notices.Sender
 
 interface PurposefulConcept : Sender, Receiver {
     fun init()

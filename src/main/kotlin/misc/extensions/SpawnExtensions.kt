@@ -1,6 +1,6 @@
 package misc.extensions
 
-import messages.Message
+import notices.Ticket
 import purposes.Status
 import purposes.structures.spawns.PurposefulSpawn
 import screeps.api.*
@@ -9,19 +9,19 @@ import screeps.utils.memory.memory
 import screeps.utils.unsafe.jsObject
 import storage.StorageHolder
 
-var SpawnMemory.currentMessageKey by memory<String?>()
+var SpawnMemory.currentTicketKey by memory<String?>()
 var SpawnMemory.status by memory(Status.Idle)
 
 val StructureSpawn.purposefulSpawn: PurposefulSpawn
     get() = PurposefulSpawn(this)
 
-var StructureSpawn.currentMessage: Message<*, *>?
+var StructureSpawn.currentTicket: Ticket<*>?
     get() {
-        return memory.currentMessageKey?.let { StorageHolder.messages.get(it) }
+        return memory.currentTicketKey?.let { StorageHolder.tickets.get(it) }
     }
     set(value) {
-        memory.currentMessageKey?.let { StorageHolder.messages.remove(it) }
-        memory.currentMessageKey = value?.let { StorageHolder.messages.set(it) }
+        memory.currentTicketKey?.let { StorageHolder.tickets.remove(it) }
+        memory.currentTicketKey = value?.let { StorageHolder.tickets.set(it) }
     }
 
 fun StructureSpawn.spawn(roleName: String, parts: Array<BodyPartConstant>): ScreepsReturnCode {

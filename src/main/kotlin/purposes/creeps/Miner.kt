@@ -1,24 +1,26 @@
 package purposes.creeps
 
-import messages.Message
-import messages.NeedCarryMessage
-import messages.NeedSpawnMessage
+import notices.Notice
+import notices.types.NeedCarryNotice
+import notices.types.NeedSpawnNotice
 import misc.extensions.availableSpots
 import misc.extensions.sourceSpots
 import misc.extensions.status
 import misc.extensions.targetId
+import notices.Ticket
+import notices.types.NeedCarryTicket
 import purposes.Status
 import screeps.api.*
 
 class Miner(creep: Creep) : PurposefulCreep(creep) {
     companion object CreepRoleCompanion : CreepRole<Miner>(Miner::class.simpleName!!) {
-        override fun spawnNeeds(): List<NeedSpawnMessage> {
+        override fun spawnNeeds(): List<NeedSpawnNotice> {
             if (Miner.roleCount == 0) {
-                return listOf(NeedSpawnMessage(this, Message.Priority.Critical))
+                return listOf(NeedSpawnNotice(this, Notice.Priority.Critical))
             }
 
             if (Miner.roleCountAndSpawning < Memory.sourceSpots) {
-                return listOf(NeedSpawnMessage(this, Message.Priority.Medium))
+                return listOf(NeedSpawnNotice(this, Notice.Priority.Medium))
             }
 
             return listOf()
@@ -26,6 +28,10 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
 
         override val parts: Array<BodyPartConstant>
             get() = arrayOf(CARRY, WORK, MOVE)
+
+        override fun createTicket(being: Miner, notice: Notice<*, Miner>): Ticket<*> {
+            TODO("Need to implement notice for miners")
+        }
     }
 
     override fun init() {
@@ -41,7 +47,7 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
 
     override fun doRole() {
         if (creep.store.getFreeCapacity() == 0) {
-            Hauler.mailBox.addMessage(NeedCarryMessage(this, Message.Priority.Medium))
+            Hauler.board.addNotice(NeedCarryNotice(this, Notice.Priority.Medium))
             creep.memory.status = Status.Sleeping
             return
         }
@@ -49,9 +55,9 @@ class Miner(creep: Creep) : PurposefulCreep(creep) {
         creep.harvest()
     }
 
-    override fun respond(receiver: Identifiable, message: Message<*, *>) {
-        when (message) {
-            is NeedCarryMessage -> {
+    override fun respond(receiver: Identifiable, ticket: Ticket<*>) {
+        when (ticket) {
+            is NeedCarryTicket -> {
                 creep.say("\uD83E\uDD20")
 
                 creep.memory.status = Status.Active
